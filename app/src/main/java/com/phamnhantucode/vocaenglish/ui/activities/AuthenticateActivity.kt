@@ -14,8 +14,10 @@ import androidx.navigation.compose.rememberNavController
 import com.phamnhantucode.vocaenglish.ui.screens.AuthScreen
 import com.phamnhantucode.vocaenglish.ui.screens.WelcomeScreen
 import com.phamnhantucode.vocaenglish.ui.theme.VOCAEnglishTheme
+import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 
+@AndroidEntryPoint
 class AuthenticateActivity: ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

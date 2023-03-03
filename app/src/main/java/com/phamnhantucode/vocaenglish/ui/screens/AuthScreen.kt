@@ -5,33 +5,40 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowRight
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.MailOutline
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.*
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.phamnhantucode.vocaenglish.R
-import com.phamnhantucode.vocaenglish.ui.theme.CustomTextField
-import com.phamnhantucode.vocaenglish.ui.theme.DarkWhite
-import com.phamnhantucode.vocaenglish.ui.theme.Teal200
-import com.phamnhantucode.vocaenglish.ui.theme.shanTellSansFamily
+import com.phamnhantucode.vocaenglish.ui.theme.*
+import com.phamnhantucode.vocaenglish.ui.viewmodels.AuthViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
 import timber.log.Timber
 
 @Composable
 fun AuthScreen(
-    navController: NavController
+    navController: NavController,
+    viewModel: AuthViewModel = hiltViewModel()
 ) {
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -51,7 +58,8 @@ fun AuthScreen(
                     .fillMaxWidth()
                     .offset(y = screenHeight * 0.1f)
             )
-            AuthSection(navController = navController,
+            AuthSection(
+                navController = navController,
                 modifier = Modifier
                     .fillMaxWidth()
                     .align(Alignment.Center)
@@ -90,14 +98,34 @@ fun TopBarAuthScreen(
 fun AuthSection(
     isLogin: Boolean = true,
     navController: NavController,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: AuthViewModel = hiltViewModel()
 ) {
+    val focusRequester = remember { FocusRequester() }
+    val localFocusManager =
+        LocalFocusManager.current
+    val isEmailValid by remember {
+        viewModel.isEmailValid
+    }
+    val isPasswordValid by remember {
+        viewModel.isPasswordValid
+    }
+    val isEmailOrPasswordEmpty by remember {
+        viewModel.isEmailOrPasswordEmpty
+    }
+    var password by rememberSaveable() {
+        mutableStateOf("")
+    }
+    var email by rememberSaveable() {
+        mutableStateOf("")
+    }
     Column(
         modifier = modifier
-            .padding(horizontal = 30.dp),
+            .padding(horizontal = 25.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceEvenly
     ) {
+        //email text field
         Column() {
             Text(
                 text = stringResource(id = R.string.email_address),
@@ -107,34 +135,123 @@ fun AuthSection(
                     fontSize = 18.sp
                 )
             )
-            CustomTextField(
-                hintText = stringResource(id = R.string.hint_email_address),
-                textStyle = MaterialTheme.typography.body1
-            ) {
-                Timber.d(it)
-            }
+
+            OutlinedTextField(
+                value = email,
+                maxLines = 1,
+                onValueChange = {
+                    email = it
+                },
+                keyboardOptions = KeyboardOptions(
+                    imeAction = ImeAction.Done,
+                    keyboardType = KeyboardType.Email
+                ),
+                keyboardActions = KeyboardActions(onDone = {
+                    focusRequester.requestFocus()
+                }),
+                textStyle = MaterialTheme.typography.body1,
+                modifier = Modifier
+                    .fillMaxWidth(),
+                shape = CircleShape,
+                placeholder = {
+                    Text(text = "abcd.ef@gmail.com")
+                },
+                leadingIcon = {
+                    Icon(imageVector = Icons.Default.MailOutline, contentDescription = null, modifier = Modifier.padding(start = 5.dp))
+                },
+                isError = !isEmailValid || isEmailOrPasswordEmpty
+                )
         }
+        if (!isEmailValid) {
+            Text(
+                text = stringResource(id = R.string.email_error),
+                style = ErrorTextStyle,
+                modifier = Modifier
+                    .fillMaxWidth()
+            )
+        }
+
         Spacer(modifier = Modifier.height(10.dp))
+        //password text field
         Column() {
             Text(
-                text = stringResource(id = R.string.email_address),
+                text = stringResource(id = R.string.passwordField),
                 style = TextStyle(
                     fontFamily = shanTellSansFamily,
                     fontWeight = FontWeight.Normal,
                     fontSize = 18.sp
                 )
             )
-            CustomTextField(
-                hintText = stringResource(id = R.string.hint_email_address),
-                textStyle = MaterialTheme.typography.body1
-            ) {
-                Timber.d(it)
+
+            var passwordVisibility by remember {
+                mutableStateOf(false)
+            }
+
+            val icon = if (passwordVisibility) {
+                painterResource(id = R.drawable.ic_baseline_visibility_24)
+            } else {
+                painterResource(id = R.drawable.ic_baseline_visibility_off_24)
+            }
+            OutlinedTextField(
+                value = password,
+                maxLines = 1,
+                onValueChange = {
+                    password = it
+                },
+                keyboardOptions = KeyboardOptions(
+                    imeAction = ImeAction.Done,
+                    keyboardType = KeyboardType.Password
+                ),
+                keyboardActions = KeyboardActions(onDone = {
+                    localFocusManager.clearFocus()
+                }),
+                textStyle = MaterialTheme.typography.body1,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .focusRequester(focusRequester),
+                shape = CircleShape,
+                placeholder = {
+                    Text(text = "min 6 characters")
+                },
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.Lock,
+                        contentDescription = null,
+                        modifier = Modifier.padding(start = 5.dp)
+                    )
+                },
+                trailingIcon = {
+                    IconButton(onClick = { passwordVisibility = !passwordVisibility }) {
+                        Icon(
+                            painter = icon,
+                            contentDescription = null,
+                            modifier = Modifier.padding(end = 5.dp)
+                        )
+                    }
+                },
+                visualTransformation = if (passwordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
+                isError = isEmailOrPasswordEmpty || !isPasswordValid
+
+            )
+            if (!isPasswordValid) {
+                Text(
+                    text = stringResource(id = R.string.password_error),
+                    style = ErrorTextStyle
+                )
+            }
+            if (isEmailOrPasswordEmpty) {
+                Text(
+                    text = stringResource(id = R.string.email_or_password_empty),
+                    style = ErrorTextStyle,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                )
             }
         }
         Spacer(modifier = Modifier.height(10.dp))
         Button(
             onClick = {
-                navController.navigate("")
+                      viewModel.checkEmailAndPasswordValid(email = email, password = password)
             },
             modifier = Modifier
                 .fillMaxWidth()
