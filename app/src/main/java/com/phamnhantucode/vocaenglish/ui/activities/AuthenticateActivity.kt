@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.phamnhantucode.vocaenglish.ui.screens.AuthScreen
 import com.phamnhantucode.vocaenglish.ui.screens.WelcomeScreen
 import com.phamnhantucode.vocaenglish.ui.theme.VOCAEnglishTheme
 import timber.log.Timber
@@ -23,7 +24,10 @@ class AuthenticateActivity: ComponentActivity() {
             VOCAEnglishTheme {
                 NavHost(navController = navController, startDestination = "welcome_screen") {
                     composable("welcome_screen") {
-                        WelcomeScreen()
+                        WelcomeScreen(navController)
+                    }
+                    composable("login_screen") {
+                        AuthScreen(navController)
                     }
                 }
             }

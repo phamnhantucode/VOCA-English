@@ -2,4 +2,9 @@
     <string name="app_name">VOCAEnglish</string>
     <string name="title_activity_login">LoginActivity</string>
     <string name="introText">An application for study English</string>
+    <string name="email_address">Your email address</string>
+    <string name="hint_email_address">abc.cd@email.com</string>
+    <string name="continue_button_text">Continue</string>
+    <string name="signin_with_google">Sign in with Google</string>
+    <string name="signin_with_facebook">Sign in with Facebook</string>
 </resources>

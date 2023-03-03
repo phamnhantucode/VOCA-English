@@ -27,13 +27,16 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.phamnhantucode.vocaenglish.R
 import com.phamnhantucode.vocaenglish.ui.theme.DarkWhite
 import com.phamnhantucode.vocaenglish.ui.theme.Teal200
 import timber.log.Timber
 
 @Composable
-fun WelcomeScreen() {
+fun WelcomeScreen(
+    navController: NavController
+) {
     Timber.d("It goes to welcomeScreen")
     Surface(
         color = Color.White,
@@ -78,7 +81,6 @@ fun WelcomeScreen() {
                         modifier = Modifier
                             .height(60.dp)
                             .aspectRatio(1f)
-
                     )
                 }
             }
@@ -106,7 +108,9 @@ fun WelcomeScreen() {
 
                     Spacer(modifier = Modifier.height(40.dp))
                     Button(
-                        onClick = { /*TODO*/ },
+                        onClick = {
+                                  navController.navigate("login_screen")
+                        },
                         modifier = Modifier
                             .fillMaxWidth(0.5f)
                             .align(CenterHorizontally),
