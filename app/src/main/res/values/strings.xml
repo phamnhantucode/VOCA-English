@@ -1,3 +1,5 @@
 <resources>
-    <string name="app_name">VOCA English</string>
+    <string name="app_name">VOCAEnglish</string>
+    <string name="title_activity_login">LoginActivity</string>
+    <string name="introText">An application for study English</string>
 </resources>
