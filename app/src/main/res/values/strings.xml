@@ -11,4 +11,7 @@
     <string name="email_error">Invalid email</string>
     <string name="email_or_password_empty">Email or password must not be empty</string>
     <string name="password_error">Password invalid</string>
+    <string name="default_web_client_id_s">42958057177-kpv7orel6kdf6rakngpj4aie1a6tcfoo.apps.googleusercontent.com</string>
+    <string name="title_activity_home">HomeActivity</string>
+
 </resources>

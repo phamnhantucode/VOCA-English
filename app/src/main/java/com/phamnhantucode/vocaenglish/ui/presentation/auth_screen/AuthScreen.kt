@@ -1,10 +1,15 @@
-package com.phamnhantucode.vocaenglish.ui.screens
+package com.phamnhantucode.vocaenglish.ui.presentation
 
+import android.content.Intent
+import android.view.RoundedCorner
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
@@ -16,9 +21,11 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -29,21 +36,83 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
+import com.google.firebase.auth.GoogleAuthProvider
 import com.phamnhantucode.vocaenglish.R
+import com.phamnhantucode.vocaenglish.ui.activities.HomeActivity
 import com.phamnhantucode.vocaenglish.ui.theme.*
 import com.phamnhantucode.vocaenglish.ui.viewmodels.AuthViewModel
-import dagger.hilt.android.lifecycle.HiltViewModel
 import timber.log.Timber
 
 @Composable
 fun AuthScreen(
     navController: NavController,
-    viewModel: AuthViewModel = hiltViewModel()
+    viewModel: AuthViewModel = hiltViewModel(),
 ) {
+    val isNetworkAvailable by remember {
+        viewModel.isNetworkAvailable
+    }
+    val authState =
+        viewModel.authState.collectAsState(initial = null) //remember look at this function description
+    val context = LocalContext.current
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = Color.White
     ) {
+        if (!isNetworkAvailable) {
+            AlertDialog(
+                title = {
+                    Text("Warning")
+                },
+                text = {
+                    Text("Network connection has some problem")
+                },
+                onDismissRequest = {
+
+                },
+                confirmButton = {
+                    viewModel.isNetworkAvailable()
+                }
+            )
+        }
+        if (authState.value?.loading == false && !authState.value?.error.equals("")) {
+            AlertDialog(
+                confirmButton = {
+                    Button(onClick = {
+                        viewModel.resetAuthState()
+                    }) {
+                        Text(text = "OK")
+                    }
+                },
+                title = {
+                    Text("Warning")
+                },
+                text = {
+                    Text(authState.value?.error.toString())
+                },
+                onDismissRequest = {
+                    viewModel.resetAuthState()
+                }
+
+            )
+        }
+        if (authState.value?.loading == true) {
+            DialogBoxLoading()
+        }
+        Timber.d("it goes her1e")
+        LaunchedEffect(key1 = authState.value) {
+
+            Timber.d(authState.value.toString())
+            authState.value?.success?.let {
+                Timber.d("it goes here3")
+                context.startActivity(Intent(context, HomeActivity::class.java).apply {
+                    putExtra("email", authState.value?.success?.user?.email)
+                })
+            }
+
+        }
         BoxWithConstraints(
             contentAlignment = Alignment.Center,
             modifier = Modifier
@@ -101,6 +170,17 @@ fun AuthSection(
     modifier: Modifier = Modifier,
     viewModel: AuthViewModel = hiltViewModel()
 ) {
+    val launcher =
+        rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()) {
+            val account = GoogleSignIn.getSignedInAccountFromIntent(it.data)
+            try {
+                val result = account.getResult(ApiException::class.java)
+                val credentials = GoogleAuthProvider.getCredential(result.idToken, null)
+                viewModel.googleSignIn(credentials)
+            } catch (it: ApiException) {
+                print(it)
+            }
+        }
     val focusRequester = remember { FocusRequester() }
     val localFocusManager =
         LocalFocusManager.current
@@ -157,10 +237,14 @@ fun AuthSection(
                     Text(text = "abcd.ef@gmail.com")
                 },
                 leadingIcon = {
-                    Icon(imageVector = Icons.Default.MailOutline, contentDescription = null, modifier = Modifier.padding(start = 5.dp))
+                    Icon(
+                        imageVector = Icons.Default.MailOutline,
+                        contentDescription = null,
+                        modifier = Modifier.padding(start = 5.dp)
+                    )
                 },
                 isError = !isEmailValid || isEmailOrPasswordEmpty
-                )
+            )
         }
         if (!isEmailValid) {
             Text(
@@ -251,7 +335,7 @@ fun AuthSection(
         Spacer(modifier = Modifier.height(10.dp))
         Button(
             onClick = {
-                      viewModel.checkEmailAndPasswordValid(email = email, password = password)
+                viewModel.checkEmailAndPasswordValid(email = email, password = password)
             },
             modifier = Modifier
                 .fillMaxWidth()
@@ -303,10 +387,19 @@ fun AuthSection(
                     .background(Color.LightGray)
             )
         }
+
         Spacer(modifier = Modifier.height(10.dp))
         //social login
+        val token = stringResource(id = R.string.default_web_client_id)
+        val context = LocalContext.current
         Button(
             onClick = {
+                val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                    .requestEmail()
+                    .requestIdToken(token)
+                    .build()
+                val googleSignInClient = GoogleSignIn.getClient(context, gso)
+                launcher.launch(googleSignInClient.signInIntent)
             },
             modifier = Modifier
                 .fillMaxWidth()
