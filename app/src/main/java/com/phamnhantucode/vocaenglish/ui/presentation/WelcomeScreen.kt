@@ -21,6 +21,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.phamnhantucode.vocaenglish.R
+import com.phamnhantucode.vocaenglish.ui.navigations.Screens
 import com.phamnhantucode.vocaenglish.ui.theme.DarkWhite
 import com.phamnhantucode.vocaenglish.ui.theme.Teal200
 import timber.log.Timber
@@ -101,7 +102,7 @@ fun WelcomeScreen(
                     Spacer(modifier = Modifier.height(40.dp))
                     Button(
                         onClick = {
-                                  navController.navigate("login_screen")
+                                  navController.navigate(Screens.AuthScreen.route)
                         },
                         modifier = Modifier
                             .fillMaxWidth(0.5f)
