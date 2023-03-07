@@ -1,9 +1,6 @@
 package com.phamnhantucode.vocaenglish.di
 
-import com.phamnhantucode.vocaenglish.data.repositories.AuthRepository
-import com.phamnhantucode.vocaenglish.data.repositories.AuthRepositoryImpl
-import com.phamnhantucode.vocaenglish.data.repositories.QuoteRepository
-import com.phamnhantucode.vocaenglish.data.repositories.QuoteRepositoryImpl
+import com.phamnhantucode.vocaenglish.data.repositories.*
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -26,5 +23,9 @@ abstract class RepositoryModule {
         authRepository: AuthRepositoryImpl
     ): AuthRepository
 
-
+    @Binds
+    @Singleton
+    abstract fun bindWordRepository(
+        wordRepository: WordRepositoryImpl
+    ): WordRepository
 }

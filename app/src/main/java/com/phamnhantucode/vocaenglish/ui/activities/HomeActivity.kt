@@ -71,7 +71,7 @@ fun MainScreen() {
             BottomNavigation(navController = navController, menu_items = navigation_items)
         },
         floatingActionButton = {
-            FindActionButton(scaffoldState, scope)
+            FindActionButton(navController,scaffoldState, scope)
         },
         floatingActionButtonPosition = FabPosition.Center,
         isFloatingActionButtonDocked = true,
@@ -147,18 +147,20 @@ fun BottomNavigation(
 
 @Composable
 fun FindActionButton(
+    navController: NavHostController,
     scaffoldState: ScaffoldState,
     scope: CoroutineScope
 ) {
     FloatingActionButton(onClick = {
-        scope.launch {
-            scaffoldState.snackbarHostState.showSnackbar(
-                "asdasdsadasdasd",
-                "ok",
-                SnackbarDuration.Indefinite,
-
-                )
-        }
+        navController.navigate(Screens.DictionaryScreen.route)
+//        scope.launch {
+//            scaffoldState.snackbarHostState.showSnackbar(
+//                "asdasdsadasdasd",
+//                "ok",
+//                SnackbarDuration.Indefinite,
+//
+//                )
+//        }
     }) {
         Icon(
             painter = painterResource(id = R.drawable.ic_baseline_search_24),
