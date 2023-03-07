@@ -38,11 +38,11 @@ fun DictionaryScreen(
             if (isSearching) {
                 Box(modifier = Modifier.fillMaxSize()) {
                     CircularProgressIndicator(
-                        modifier = Modifier.align(Alignment.Center)
+                        modifier = Modifier.align(Alignment.Center)g
                     )
                 }
             } else {
-                result?.apply {
+                if (result?.word?.isEmpty() == true && result?.word != null) result.apply {
                     Text(text = word.orEmpty(), style = MaterialTheme.typography.h2)
                     Text(
                         text = phonetic ?: if (phonetics?.size != 0) {
