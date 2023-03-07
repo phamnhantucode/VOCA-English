@@ -3,15 +3,14 @@ package com.phamnhantucode.vocaenglish.ui.presentation
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.phamnhantucode.vocaenglish.data.remote.api.dto.Meaning
@@ -61,10 +60,12 @@ fun DictionaryScreen(
                     meanings?.apply {
                         for (meaning in meanings!!) {
                             Meaning(meaning = meaning)
+                            Divider(
+                                modifier = Modifier.fillMaxWidth(1f)
+                            )
                         }
                     }
                 }
-
             }
         }
     }

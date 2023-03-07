@@ -45,18 +45,18 @@ class DictionaryViewModel @Inject constructor(
 
     private fun searchWord() =
         viewModelScope.launch {
-            wordRepository.findWord(_searchText.value).collect {
-                when (it) {
+            wordRepository.findWord(_searchText.value).collect {result ->
+                when (result) {
                     is Resource.Success -> {
-                        _result.value = it.data!!
+                        _result.update { result.data!! }
                         Timber.d(_result.value.word)
                     }
                     is Resource.Error -> {
-                        Timber.e(it.message)
-                        _result.value = WordDto()
+                        Timber.e(result.message)
+                        _result.update { WordDto() }
                     }
                     else -> {
-                        _result.value = WordDto()
+                        _result.update { WordDto() }
                     }
                 }
             }
