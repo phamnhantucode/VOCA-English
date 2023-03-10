@@ -1,5 +1,6 @@
 package com.phamnhantucode.vocaenglish.ui.viewmodels
 
+import androidx.compose.runtime.Composable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.phamnhantucode.vocaenglish.data.remote.api.dto.WordDto
@@ -75,4 +76,3 @@ class DictionaryViewModel @Inject constructor(
 
 
 }
-
