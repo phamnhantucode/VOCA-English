@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.phamnhantucode.vocaenglish.data.remote.api.dto.WordDto
 import com.phamnhantucode.vocaenglish.data.repositories.WordRepository
+import com.phamnhantucode.vocaenglish.domain.models.Word
 import com.phamnhantucode.vocaenglish.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
@@ -22,7 +23,7 @@ class DictionaryViewModel @Inject constructor(
     private val _isSearching = MutableStateFlow(false)
     val isSearching = _isSearching.asStateFlow()
 
-    private val _result = MutableStateFlow(WordDto(word = ""))
+    private val _result = MutableStateFlow(ArrayList<Word>())
     val word = _result.asStateFlow()
 //    val word = searchText
 //        .debounce(100L) //delay 100milliseconds
@@ -48,15 +49,14 @@ class DictionaryViewModel @Inject constructor(
             wordRepository.findWord(_searchText.value).collect {result ->
                 when (result) {
                     is Resource.Success -> {
-                        _result.update { result.data!! }
-                        Timber.d(_result.value.word)
+                        _result.update { (result.data as ArrayList<Word>?)!! }
                     }
                     is Resource.Error -> {
                         Timber.e(result.message)
-                        _result.update { WordDto() }
+                        _result.update { ArrayList() }
                     }
                     else -> {
-                        _result.update { WordDto() }
+                        _result.update { ArrayList() }
                     }
                 }
             }

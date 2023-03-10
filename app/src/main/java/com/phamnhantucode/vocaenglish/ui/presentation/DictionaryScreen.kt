@@ -10,10 +10,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.phamnhantucode.vocaenglish.data.remote.api.dto.Meaning
+import com.phamnhantucode.vocaenglish.data.remote.api.dto.MeaningDto
+import com.phamnhantucode.vocaenglish.domain.models.Word
 import com.phamnhantucode.vocaenglish.ui.viewmodels.DictionaryViewModel
 
 @Composable
@@ -38,32 +38,19 @@ fun DictionaryScreen(
             if (isSearching) {
                 Box(modifier = Modifier.fillMaxSize()) {
                     CircularProgressIndicator(
-                        modifier = Modifier.align(Alignment.Center)g
+                        modifier = Modifier.align(Alignment.Center)
                     )
                 }
             } else {
-                if (result?.word?.isEmpty() == true && result?.word != null) result.apply {
-                    Text(text = word.orEmpty(), style = MaterialTheme.typography.h2)
-                    Text(
-                        text = phonetic ?: if (phonetics?.size != 0) {
-                            phonetics?.first {
-                                it.text != null && it.text != ""
-                            }?.text
-                        } else {
-                            null
-                        } ?: ""
-                    )
-                    Text(
-                        text = "Meanings",
-                        style = MaterialTheme.typography.h2
-                    )
-                    meanings?.apply {
-                        for (meaning in meanings!!) {
-                            Meaning(meaning = meaning)
-                            Divider(
-                                modifier = Modifier.fillMaxWidth(1f)
-                            )
-                        }
+                if (result.isNotEmpty()) {
+                    result.forEach {
+                        WordCard(it)
+                    }
+                } else {
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.align(Alignment.Center)
+                        )
                     }
                 }
             }
@@ -72,8 +59,13 @@ fun DictionaryScreen(
 }
 
 @Composable
+fun WordCard(it: Word) {
+    Text(text = it.word ?: "Not found")
+}
+
+@Composable
 fun Meaning(
-    meaning: Meaning
+    meaning: MeaningDto
 ) {
     Text(text = meaning.partOfSpeech)
     Text(text = meaning.definitions.first().definition)
@@ -82,4 +74,9 @@ fun Meaning(
             text = synonym
         )
     }
+}
+
+@Composable
+fun NotFoundCard() {
+    
 }
