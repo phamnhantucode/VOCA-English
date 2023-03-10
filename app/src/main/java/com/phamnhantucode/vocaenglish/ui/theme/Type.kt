@@ -41,9 +41,23 @@ val Typography = Typography(
         fontStyle = FontStyle.Normal,
         fontSize = 24.sp
     ),
+    h3 = TextStyle(
+        fontFamily = shanTellSansFamily,
+        fontWeight = FontWeight.SemiBold,
+        fontStyle = FontStyle.Normal,
+        fontSize = 22.sp
+    ),
     body1 = TextStyle(
         fontFamily = shanTellSansFamily,
         fontWeight = FontWeight.Normal,
+        fontStyle = FontStyle.Normal,
+        fontSize = 18.sp,
+        lineHeight = 18.sp,
+    ),
+
+    body2 = TextStyle(
+        fontFamily = shanTellSansFamily,
+        fontWeight = FontWeight.Light,
         fontStyle = FontStyle.Normal,
         fontSize = 16.sp,
         lineHeight = 18.sp,
@@ -63,8 +77,8 @@ val Typography = Typography(
 )
 
 val ErrorTextStyle = TextStyle(
-fontFamily = shanTellSansFamily,
-fontWeight = FontWeight.Light,
-fontSize = 14.sp,
-color = Color.Red
+    fontFamily = shanTellSansFamily,
+    fontWeight = FontWeight.Light,
+    fontSize = 14.sp,
+    color = Color.Red
 )

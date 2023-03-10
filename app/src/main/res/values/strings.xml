@@ -13,5 +13,10 @@
     <string name="password_error">Password invalid</string>
     <string name="default_web_client_id_s">42958057177-kpv7orel6kdf6rakngpj4aie1a6tcfoo.apps.googleusercontent.com</string>
     <string name="title_activity_home">HomeActivity</string>
+    <string name="not_found">Not found</string>
+    <string name="sorry">We\'re sorry</string>
+    <string name="no_definition_found">No Definitions Found</string>
+    <string name="message_no_definition_found">Sorry pal, we couldn\'t find definitions for the word you were looking for.</string>
+    <string name="resolution_no_definition_found">You can try the search again at later time or head to the web instead.</string>
 
 </resources>

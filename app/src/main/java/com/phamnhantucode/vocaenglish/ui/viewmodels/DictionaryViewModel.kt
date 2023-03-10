@@ -17,6 +17,7 @@ class DictionaryViewModel @Inject constructor(
     val wordRepository: WordRepository
 ) :
     ViewModel() {
+
     private val _searchText = MutableStateFlow("")
     val searchText = _searchText.asStateFlow()
 
@@ -46,7 +47,7 @@ class DictionaryViewModel @Inject constructor(
 
     private fun searchWord() =
         viewModelScope.launch {
-            wordRepository.findWord(_searchText.value).collect {result ->
+            wordRepository.findWord(_searchText.value).collect { result ->
                 when (result) {
                     is Resource.Success -> {
                         _result.update { (result.data as ArrayList<Word>?)!! }
@@ -61,6 +62,7 @@ class DictionaryViewModel @Inject constructor(
                 }
             }
         }
+
     fun onSearchText(text: String) {
         _searchText.value = text
         searchWord()
