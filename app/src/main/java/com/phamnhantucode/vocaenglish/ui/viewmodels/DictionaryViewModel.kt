@@ -7,6 +7,7 @@ import com.phamnhantucode.vocaenglish.data.repositories.WordRepository
 import com.phamnhantucode.vocaenglish.domain.models.Word
 import com.phamnhantucode.vocaenglish.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -51,13 +52,17 @@ class DictionaryViewModel @Inject constructor(
                 when (result) {
                     is Resource.Success -> {
                         _result.update { (result.data as ArrayList<Word>?)!! }
+                        delay(200)
+                        _isSearching.update { false }
                     }
                     is Resource.Error -> {
                         Timber.e(result.message)
                         _result.update { ArrayList() }
+                        delay(200)
+                        _isSearching.update { false }
                     }
                     else -> {
-                        _result.update { ArrayList() }
+                        _isSearching.update { true }
                     }
                 }
             }

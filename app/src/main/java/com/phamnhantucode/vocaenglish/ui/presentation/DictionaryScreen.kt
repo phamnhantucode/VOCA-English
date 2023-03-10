@@ -1,5 +1,6 @@
 package com.phamnhantucode.vocaenglish.ui.presentation
 
+import android.os.Build.VERSION.SDK_INT
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.BasicTextField
@@ -9,11 +10,18 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import coil.ImageLoader
+import coil.compose.rememberAsyncImagePainter
+import coil.decode.GifDecoder
+import coil.decode.ImageDecoderDecoder
+import coil.request.ImageRequest
+import coil.size.Size
 import com.phamnhantucode.vocaenglish.data.remote.api.dto.MeaningDto
 import com.phamnhantucode.vocaenglish.domain.models.Word
 import com.phamnhantucode.vocaenglish.ui.viewmodels.DictionaryViewModel
@@ -39,9 +47,7 @@ fun DictionaryScreen(
 
             if (isSearching) {
                 Box(modifier = Modifier.fillMaxSize()) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.align(Alignment.Center)
-                    )
+                    GifImage(modifier = Modifier.align(Alignment.Center))
                 }
             } else {
                 if (result.isNotEmpty()) {
@@ -121,4 +127,29 @@ fun NotFoundCard() {
             )
         }
     }
+}
+
+@Composable
+fun GifImage(
+    modifier: Modifier = Modifier,
+) {
+    val context = LocalContext.current
+    val imageLoader = ImageLoader.Builder(context)
+        .components {
+            if (SDK_INT >= 28) {
+                add(ImageDecoderDecoder.Factory())
+            } else {
+                add(GifDecoder.Factory())
+            }
+        }
+        .build()
+    Image(
+        painter = rememberAsyncImagePainter(
+            ImageRequest.Builder(context).data(data = R.drawable.gif_finding).apply(block = {
+                size(Size.ORIGINAL)
+            }).build(), imageLoader = imageLoader
+        ),
+        contentDescription = null,
+        modifier = modifier.fillMaxWidth(),
+    )
 }
