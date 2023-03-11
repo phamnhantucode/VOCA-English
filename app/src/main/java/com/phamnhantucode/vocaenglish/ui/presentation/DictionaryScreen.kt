@@ -1,8 +1,8 @@
 package com.phamnhantucode.vocaenglish.ui.presentation
 
 import android.os.Build.VERSION.SDK_INT
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
+import android.widget.Space
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -18,13 +18,22 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextIndent
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.ImageLoader
 import coil.compose.rememberAsyncImagePainter
@@ -36,7 +45,11 @@ import com.phamnhantucode.vocaenglish.data.remote.api.dto.MeaningDto
 import com.phamnhantucode.vocaenglish.domain.models.Word
 import com.phamnhantucode.vocaenglish.ui.viewmodels.DictionaryViewModel
 import com.phamnhantucode.vocaenglish.R
+import com.phamnhantucode.vocaenglish.domain.models.Meaning
+import com.phamnhantucode.vocaenglish.domain.models.Phonetic
 import com.phamnhantucode.vocaenglish.ui.theme.DarkWhite
+import com.phamnhantucode.vocaenglish.ui.theme.Teal200
+import com.phamnhantucode.vocaenglish.ui.theme.shanTellSansFamily
 import kotlin.reflect.KFunction1
 
 @Composable
@@ -54,7 +67,8 @@ fun DictionaryScreen(
             val isSearching by viewModel.isSearching.collectAsState()
 
             Row(
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
                     .padding(start = 10.dp, top = 10.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -62,7 +76,9 @@ fun DictionaryScreen(
                     imageVector = Icons.Default.KeyboardArrowLeft,
                     contentDescription = stringResource(id = R.string.search),
                     tint = Color.Black,
-                    modifier = Modifier.height(40.dp).aspectRatio(1f)
+                    modifier = Modifier
+                        .height(40.dp)
+                        .aspectRatio(1f)
                 )
                 SearchBar(
                     modifier = Modifier
@@ -78,8 +94,12 @@ fun DictionaryScreen(
                 }
             } else {
                 if (result.isNotEmpty()) {
-                    result.forEach {
-                        WordCard(it)
+                    Column(
+                        modifier = Modifier.verticalScroll(rememberScrollState())
+                    ) {
+                        result.forEach {
+                            WordCard(it)
+                        }
                     }
                 } else if (!searchText.isBlank()) {
                     NotFoundCard()
@@ -90,8 +110,143 @@ fun DictionaryScreen(
 }
 
 @Composable
-fun WordCard(it: Word) {
-    Text(text = it.word ?: "Not found")
+fun WordCard(word: Word) {
+    Box(
+        modifier = Modifier
+            .padding(10.dp)
+            .clip(RoundedCornerShape(10.dp))
+            .border(BorderStroke(1.dp, Teal200), shape = RoundedCornerShape(10.dp))
+            .background(Color.White)
+            .padding(20.dp)
+    ) {
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+        ) {
+            Text(text = word.word ?: "Not found",
+                style = MaterialTheme.typography.h2
+            )
+            word.phonetics?.let {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceAround,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    it.forEach {
+                        if (!it.text.isNullOrEmpty() && !it.audio.isNullOrEmpty()) {
+                            PhoneticSector(it)
+                        }
+                    }
+                }
+            }
+            word.meanings?.let { meanings ->
+                if (meanings.size > 0) {
+                    Text(
+                        text = "Meanings",
+                        fontWeight = FontWeight.Bold
+                    )
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        for (i in 0 until meanings.size) {
+                            MeaningSector(meaning = meanings[i], index = i)
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun PhoneticSector(phonetic: Phonetic) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            painter = painterResource(id = R.drawable.ic_baseline_volume_up_24),
+            contentDescription = null
+        )
+        Text(
+            text = phonetic.text ?: "",
+        )
+    }
+}
+
+@Composable
+fun MeaningSector(
+    meaning: Meaning,
+    index: Int
+) {
+    Column(
+
+    ) {
+        Text(
+            text = index.toString() + ". " + meaning.partOfSpeech ?: "",
+            fontWeight = FontWeight.SemiBold,
+            color = Color.Gray
+        )
+        meaning.definitions?.forEach { definition ->
+            Column(
+                modifier = Modifier.padding(horizontal = 20.dp)
+            ) {
+                Text(
+                    text = definition.definition ?: "",
+                    style = TextStyle(
+                        textIndent = TextIndent(
+                            firstLine = 10.sp
+                        ),
+                        fontFamily = shanTellSansFamily,
+                        fontWeight = FontWeight.Normal,
+                        fontSize = 16.sp
+                    )
+                )
+                if (!definition.example.isNullOrBlank()) {
+                    Text(
+                        text = definition.example ?: "",
+                        fontWeight = FontWeight.Light,
+                        fontStyle = FontStyle.Italic,
+                        color = Color.LightGray,
+                        modifier = Modifier
+                            .drawBehind {
+                                drawLine(
+                                    color = Color.LightGray,
+                                    start = Offset(0f, 0f),
+                                    end = Offset(0f, size.height),
+                                    strokeWidth = 1.dp.toPx()
+                                )
+                            }
+                            .padding(start = 8.dp),
+                    )
+                }
+                definition.antonyms?.let {
+                    if (it.size > 0) {
+                        Row(
+
+                        ) {
+                            Text(text = "Antonyms: ")
+                            Text(text = it.joinToString(separator = ", "))
+                        }
+                    }
+                }
+                definition.synonyms?.let {
+                    if (it.size > 0) {
+                        Row(
+
+                        ) {
+                            Text(text = "Synonyms: ")
+                            Text(text = it.joinToString(separator = ", "))
+                        }
+                    }
+                }
+                Spacer(modifier = Modifier.height(5.dp))
+            }
+        }
+    }
+
 }
 
 @Composable
@@ -194,7 +349,11 @@ fun SearchBar(
     backgroundTextFieldColor: Color = DarkWhite,
     onValueChange: (String) -> Unit,
 ) {
-    BasicTextField(value = value, onValueChange = onValueChange, modifier = modifier) { innerTextField ->
+    BasicTextField(
+        value = value,
+        onValueChange = onValueChange,
+        modifier = modifier
+    ) { innerTextField ->
         Row(
             modifier = Modifier
                 .fillMaxWidth()
