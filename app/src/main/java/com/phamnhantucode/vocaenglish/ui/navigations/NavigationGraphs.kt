@@ -41,7 +41,7 @@ fun HomeActivityGraph(
             AccountScreen()
         }
         composable(Screens.DictionaryScreen.route) {
-            DictionaryScreen()
+            DictionaryScreen(navController = navController)
         }
     }
 }

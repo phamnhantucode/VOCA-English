@@ -1,5 +1,6 @@
 package com.phamnhantucode.vocaenglish.di
 
+import android.media.MediaPlayer
 import com.google.firebase.auth.FirebaseAuth
 import com.phamnhantucode.vocaenglish.data.remote.api.QuoteApi
 import com.phamnhantucode.vocaenglish.data.remote.api.WordApi
@@ -38,4 +39,8 @@ object AppModule {
         .addConverterFactory(MoshiConverterFactory.create())
         .build()
         .create(WordApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideMediaPlayer(): MediaPlayer = MediaPlayer()
 }

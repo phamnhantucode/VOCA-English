@@ -1,5 +1,7 @@
 package com.phamnhantucode.vocaenglish.ui.viewmodels
 
+import android.media.AudioManager
+import android.media.MediaPlayer
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -12,6 +14,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import java.io.IOException
 import javax.inject.Inject
 
 @HiltViewModel
@@ -19,6 +22,9 @@ class DictionaryViewModel @Inject constructor(
     val wordRepository: WordRepository
 ) :
     ViewModel() {
+
+    @Inject
+    lateinit var mediaPlayer: MediaPlayer
 
     private val _searchText = MutableStateFlow("")
     val searchText = _searchText.asStateFlow()
@@ -47,6 +53,7 @@ class DictionaryViewModel @Inject constructor(
 //            _result.value
 //        )
 
+
     private fun searchWord() =
         viewModelScope.launch {
             wordRepository.findWord(_searchText.value).collect { result ->
@@ -74,5 +81,17 @@ class DictionaryViewModel @Inject constructor(
         searchWord()
     }
 
-
+    fun playPhonetic(audioUrl: String) = viewModelScope.launch {
+        mediaPlayer.reset()
+        if (audioUrl.isNotEmpty() && audioUrl.isNotBlank()) {
+            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC)
+            try {
+                mediaPlayer.setDataSource(audioUrl)
+                mediaPlayer.prepare()
+                mediaPlayer.start()
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+        }
+    }
 }

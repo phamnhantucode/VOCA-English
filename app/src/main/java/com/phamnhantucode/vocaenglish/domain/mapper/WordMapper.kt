@@ -11,10 +11,10 @@ object WordMapper {
         return Word(
             word = wordDto.word,
             phonetics = wordDto.phonetics?.map {
-                                              Phonetic(
-                                                  text = it.text,
-                                                  audio = it.audio
-                                              )
+                Phonetic(
+                    text = it.text,
+                    audio = it.audio
+                )
             },
             meanings = wordDto.meanings?.map {
                 Meaning(
