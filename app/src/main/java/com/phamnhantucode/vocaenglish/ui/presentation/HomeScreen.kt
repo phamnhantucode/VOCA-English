@@ -1,5 +1,6 @@
 package com.phamnhantucode.vocaenglish.ui.presentation
 
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.rememberScrollState
@@ -36,7 +37,7 @@ fun TopBarHomeScreen(
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     Column(
-        modifier = modifier
+        modifier = modifier.verticalScroll(rememberScrollState())
     ) {
 
         val currentTime = remember {

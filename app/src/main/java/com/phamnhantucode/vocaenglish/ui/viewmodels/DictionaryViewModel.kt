@@ -89,6 +89,7 @@ class DictionaryViewModel @Inject constructor(
                 mediaPlayer.setDataSource(audioUrl)
                 mediaPlayer.prepare()
                 mediaPlayer.start()
+
             } catch (e: IOException) {
                 e.printStackTrace()
             }

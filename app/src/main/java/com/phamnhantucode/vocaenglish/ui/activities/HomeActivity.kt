@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -133,7 +134,8 @@ fun BottomNavigation(
                         label = {
                             Text(
                                 text = menu_items[i].title,
-                                style = MaterialTheme.typography.body1
+                                style = MaterialTheme.typography.body2,
+                                fontSize = 12.sp
                             )
                         },
                         alwaysShowLabel = false
@@ -154,7 +156,8 @@ fun BottomNavigation(
                         label = {
                             Text(
                                 text = menu_items[i].title,
-                                style = MaterialTheme.typography.body1
+                                style = MaterialTheme.typography.body2,
+                                fontSize = 12.sp
                             )
                         },
                         alwaysShowLabel = false
